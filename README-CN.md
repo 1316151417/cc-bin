@@ -6,7 +6,7 @@
 
 ## 这是什么？
 
-使用 [Claude Code](https://claude.ai/code) 时，你并不局限于 Anthropic 的模型。**智谱（GLM）**、**MiniMax**、**DeepSeek**、**Mimo** 等提供商都提供了 Anthropic 兼容的 API。这个项目用两个简单的脚本帮你管理这些提供商。
+使用 [Claude Code](https://claude.ai/code) 时，你并不局限于 Anthropic 的模型。**Anthropic**、**智谱（GLM）**、**MiniMax**、**DeepSeek**、**Mimo** 等提供商都提供了 Anthropic 兼容的 API。这个项目用两个简单的脚本帮你管理这些提供商。
 
 ## 脚本
 
@@ -15,7 +15,7 @@
 通过更新 `~/.claude/settings.json`，将 Claude Code 永久切换到指定的提供商。
 
 ```bash
-ccs <zp|mm|ds|mimo>
+ccs <an|zp|mm|ds|mimo>
 ```
 
 **做了什么：**
@@ -28,7 +28,7 @@ ccs <zp|mm|ds|mimo>
 使用指定提供商启动 `claude`，**不修改**全局配置。如果不指定提供商，则默认使用 `~/.claude/settings.json`。
 
 ```bash
-ccp [zp|mm|ds|mimo] [claude options...]
+ccp [an|zp|mm|ds|mimo] [claude options...]
 ```
 
 **做了什么：**
@@ -55,6 +55,7 @@ ccp [zp|mm|ds|mimo] [claude options...]
 
 | 键  | 提供商   | Sonnet | Opus | Haiku |
 |-----|---------|--------|------|-------|
+| an  | Anthropic | claude-sonnet-4-6 | claude-opus-4-6 | claude-haiku-4-5 |
 | zp  | 智谱     | GLM-5.1 | GLM-5.1 | GLM-4.5-Air |
 | mm  | MiniMax | MiniMax-M2.7 | MiniMax-M2.7 | MiniMax-M2.7 |
 | ds  | DeepSeek | deepseek-v4-pro | deepseek-v4-pro | deepseek-v4-flash |
@@ -65,6 +66,9 @@ ccp [zp|mm|ds|mimo] [claude options...]
 两个脚本都从环境变量读取凭证：
 
 ```bash
+export ANTHROPIC_BASE_URL="https://api.anthropic.com"
+export ANTHROPIC_API_KEY="你的密钥"
+
 export ZHIPU_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
 export ZHIPU_API_KEY="你的密钥"
 

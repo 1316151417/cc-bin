@@ -6,7 +6,7 @@ A lightweight Claude Code provider management tool — two tiny Zsh scripts that
 
 ## What is this?
 
-When using [Claude Code](https://claude.ai/code), you're not limited to Anthropic's models. Providers like **Zhipu (GLM)**, **MiniMax**, **DeepSeek**, and **Mimo** expose Anthropic-compatible APIs. This project gives you two simple scripts to manage these providers.
+When using [Claude Code](https://claude.ai/code), you're not limited to Anthropic's models. Providers like **Anthropic**, **Zhipu (GLM)**, **MiniMax**, **DeepSeek**, and **Mimo** expose Anthropic-compatible APIs. This project gives you two simple scripts to manage these providers.
 
 ## Scripts
 
@@ -15,7 +15,7 @@ When using [Claude Code](https://claude.ai/code), you're not limited to Anthropi
 Permanently switches Claude Code to use a specific provider by updating `~/.claude/settings.json`.
 
 ```bash
-ccs <zp|mm|ds|mimo>
+ccs <an|zp|mm|ds|mimo>
 ```
 
 **What it does:**
@@ -28,7 +28,7 @@ ccs <zp|mm|ds|mimo>
 Launches `claude` with a specific provider **without** touching your global config. If no provider flag is given, falls back to `~/.claude/settings.json`.
 
 ```bash
-ccp [zp|mm|ds|mimo] [claude options...]
+ccp [an|zp|mm|ds|mimo] [claude options...]
 ```
 
 **What it does:**
@@ -55,6 +55,7 @@ Switching your global provider mid-session would disrupt any active Claude Code 
 
 | Key | Provider | Sonnet | Opus | Haiku |
 |-----|----------|--------|------|-------|
+| an  | Anthropic | claude-sonnet-4-6 | claude-opus-4-6 | claude-haiku-4-5 |
 | zp  | Zhipu    | GLM-5.1 | GLM-5.1 | GLM-4.5-Air |
 | mm  | MiniMax  | MiniMax-M2.7 | MiniMax-M2.7 | MiniMax-M2.7 |
 | ds  | DeepSeek | deepseek-v4-pro | deepseek-v4-pro | deepseek-v4-flash |
@@ -65,6 +66,9 @@ Switching your global provider mid-session would disrupt any active Claude Code 
 Both scripts read credentials from environment variables:
 
 ```bash
+export ANTHROPIC_BASE_URL="https://api.anthropic.com"
+export ANTHROPIC_API_KEY="your-key-here"
+
 export ZHIPU_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
 export ZHIPU_API_KEY="your-key-here"
 

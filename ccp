@@ -4,6 +4,7 @@ set -euo pipefail
 
 # 提供商配置：prefix sonnet opus haiku
 declare -A PROVIDERS=(
+  [an]="ANTHROPIC claude-sonnet-4-6 claude-opus-4-6 claude-haiku-4-5"
   [zp]="ZHIPU GLM-5.1 GLM-5.1 GLM-4.5-Air"
   [mm]="MINIMAX MiniMax-M2.7 MiniMax-M2.7 MiniMax-M2.7"
   [ds]="DEEPSEEK deepseek-v4-pro deepseek-v4-pro deepseek-v4-flash"

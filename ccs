@@ -1,0 +1,42 @@
+#!/usr/bin/env zsh
+
+set -euo pipefail
+
+TARGET_FILE="$HOME/.claude/settings.json"
+
+declare -A PROVIDERS=(
+  [zp]="ZHIPU GLM-5.1 GLM-5.1 GLM-4.5-Air"
+  [mm]="MINIMAX MiniMax-M2.7 MiniMax-M2.7 MiniMax-M2.7"
+  [ds]="DEEPSEEK deepseek-v4-pro deepseek-v4-pro deepseek-v4-flash"
+  [mimo]="MIMO mimo-v2.5-pro mimo-v2.5-pro mimo-v2.5-pro"
+)
+
+key="${1:-}"
+if [[ -z "${PROVIDERS[$key]:-}" ]]; then
+  echo "Usage: ccs <${(kj:|:)PROVIDERS}>"
+  exit 1
+fi
+
+read -r prefix sonnet opus haiku <<< "${PROVIDERS[$key]}"
+base_var="${prefix}_BASE_URL"
+key_var="${prefix}_API_KEY"
+base_url="${(P)base_var:?}/anthropic"
+api_key="${(P)key_var:?}"
+
+[[ -f "$TARGET_FILE" ]] && cp "$TARGET_FILE" "${TARGET_FILE}.bak"
+
+cat > "$TARGET_FILE" <<EOF
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "$base_url",
+    "ANTHROPIC_AUTH_TOKEN": "$api_key",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "$sonnet",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "$opus",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "$haiku"
+  }
+}
+EOF
+
+echo "Switched to $sonnet/$opus/$haiku"

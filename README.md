@@ -3,8 +3,7 @@
 > [中文说明](README-CN.md)
 
 <p align="center">
-  <img src="ccs-display.png" width="48%" />
-  <img src="ccp-display.png" width="48%" />
+  <img src="display.png" width="100%" />
 </p>
 
 Two ~40-line Zsh scripts to switch or isolate LLM providers for [Claude Code](https://claude.ai/code). Zero dependencies. No magic — just associative arrays and heredocs.

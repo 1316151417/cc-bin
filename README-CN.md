@@ -28,7 +28,7 @@ ccs <zp|mm|ds|mimo>
 使用指定提供商启动 `claude`，**不修改**全局配置。如果不指定提供商，则默认使用 `~/.claude/settings.json`。
 
 ```bash
-ccp [--zp|--mm|--ds|--mimo] [claude options...]
+ccp [zp|mm|ds|mimo] [claude options...]
 ```
 
 **做了什么：**
@@ -119,7 +119,7 @@ export DEEPSEEK_API_KEY="sk-..."
 ccs ds
 
 # 或者单次使用 MiniMax 启动一个会话
-ccp --mm
+ccp mm
 ```
 
 ## License

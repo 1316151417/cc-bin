@@ -28,7 +28,7 @@ ccs <zp|mm|ds|mimo>
 Launches `claude` with a specific provider **without** touching your global config. If no provider flag is given, falls back to `~/.claude/settings.json`.
 
 ```bash
-ccp [--zp|--mm|--ds|--mimo] [claude options...]
+ccp [zp|mm|ds|mimo] [claude options...]
 ```
 
 **What it does:**
@@ -119,7 +119,7 @@ export DEEPSEEK_API_KEY="sk-..."
 ccs ds
 
 # ...or fire up a one-off session with MiniMax
-ccp --mm
+ccp mm
 ```
 
 ## License

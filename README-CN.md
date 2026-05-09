@@ -2,6 +2,11 @@
 
 > [English](README.md)
 
+<p align="center">
+  <img src="ccs-display.png" width="48%" />
+  <img src="ccp-display.png" width="48%" />
+</p>
+
 两个 ~40 行的 Zsh 脚本，用于切换或隔离 [Claude Code](https://claude.ai/code) 的 LLM 提供商。零依赖，无魔法 — 只有关联数组和 heredoc。
 
 [Anthropic](https://api.anthropic.com)、[智谱](https://open.bigmodel.cn)、[MiniMax](https://minimax.chat)、[DeepSeek](https://deepseek.com)、[Mimo](https://mimoml.com) 都提供 Anthropic 兼容的 API。这两个脚本帮你管理它们。

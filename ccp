@@ -13,13 +13,13 @@ declare -A PROVIDERS=(
 # 解析参数
 provider=""
 passthrough=()
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --zp|--mm|--ds|--mimo) provider="${1#--}"; shift ;;
-    --help|-h) echo "Usage: ccp [--zp|--mm|--ds|--mimo] [claude options...]"; exit 0 ;;
-    *) passthrough+=("$1"); shift ;;
-  esac
-done
+if [[ $# -gt 0 && -n "${PROVIDERS[$1]:-}" ]]; then
+  provider="$1"; shift
+fi
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  echo "Usage: ccp <${(kj:|:)PROVIDERS}> [claude options...]"; exit 0
+fi
+passthrough=("$@")
 
 if [[ -n "$provider" ]]; then
   read -r prefix sonnet opus haiku <<< "${PROVIDERS[$provider]}"

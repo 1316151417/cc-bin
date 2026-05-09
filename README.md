@@ -4,8 +4,6 @@
 
 A lightweight Claude Code provider management tool — two tiny Zsh scripts that let you switch between or isolate LLM providers effortlessly.
 
-## What is this?
-
 When using [Claude Code](https://claude.ai/code), you're not limited to Anthropic's models. Providers like **Anthropic**, **Zhipu (GLM)**, **MiniMax**, **DeepSeek**, and **Mimo** expose Anthropic-compatible APIs. This project gives you two simple scripts to manage these providers.
 
 ## Scripts
@@ -25,15 +23,15 @@ ccs <an|zp|mm|ds|mimo>
 
 ### `ccp` — Provider Per-Invocation (isolated)
 
-Launches `claude` with a specific provider **without** touching your global config. If no provider flag is given, falls back to `~/.claude/settings.json`.
+One-shot `claude` launch with a specific provider, reading credentials from environment variables. Does **not** modify your global config. If no provider is given, falls back to `~/.claude/settings.json`.
 
 ```bash
 ccp [an|zp|mm|ds|mimo] [claude options...]
 ```
 
 **What it does:**
-- When a provider is specified, writes a temporary settings file to `.claude/settings-<provider>.json` and launches `claude` with `--settings` pointing to that file
-- When called without a provider flag, simply passes through to `claude` using your default `~/.claude/settings.json`
+- Reads `<PREFIX>_BASE_URL` and `<PREFIX>_API_KEY` from environment variables, writes a temporary settings file to `.claude/settings-<provider>.json`, and launches `claude` with `--settings` pointing to that file
+- Without a provider, simply passes through to `claude` using your default `~/.claude/settings.json`
 - Your global config remains untouched in either case — other sessions are unaffected
 
 ## Problems Solved

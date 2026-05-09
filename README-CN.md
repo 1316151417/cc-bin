@@ -4,8 +4,6 @@
 
 一个轻量级的 Claude Code 提供商管理工具 — 两个简短的 Zsh 脚本，让你轻松切换或隔离不同的 LLM 提供商。
 
-## 这是什么？
-
 使用 [Claude Code](https://claude.ai/code) 时，你并不局限于 Anthropic 的模型。**Anthropic**、**智谱（GLM）**、**MiniMax**、**DeepSeek**、**Mimo** 等提供商都提供了 Anthropic 兼容的 API。这个项目用两个简单的脚本帮你管理这些提供商。
 
 ## 脚本
@@ -25,14 +23,14 @@ ccs <an|zp|mm|ds|mimo>
 
 ### `ccp` — 单次调用指定提供商（会话隔离）
 
-使用指定提供商启动 `claude`，**不修改**全局配置。如果不指定提供商，则默认使用 `~/.claude/settings.json`。
+通过环境变量读取凭证，使用指定提供商启动一次 `claude`，**不修改**全局配置。如果不指定提供商，则默认使用 `~/.claude/settings.json`。
 
 ```bash
 ccp [an|zp|mm|ds|mimo] [claude options...]
 ```
 
 **做了什么：**
-- 指定提供商时，在 `.claude/settings-<provider>.json` 写入一个临时 settings 文件，使用 `--settings` 参数启动 `claude` 指向该文件
+- 指定提供商时，从环境变量读取 `<PREFIX>_BASE_URL` 和 `<PREFIX>_API_KEY`，写入临时 settings 文件 `.claude/settings-<provider>.json`，并以 `--settings` 参数启动 `claude`
 - 不指定提供商时，直接透传参数给 `claude`，使用默认的 `~/.claude/settings.json`
 - 两种情况下全局配置均保持不变 — 其他会话不受任何影响
 

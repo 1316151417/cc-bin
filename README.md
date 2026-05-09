@@ -2,54 +2,27 @@
 
 > [中文说明](README-CN.md)
 
-A lightweight Claude Code provider management tool — two tiny Zsh scripts that let you switch between or isolate LLM providers effortlessly.
+Two ~40-line Zsh scripts to switch or isolate LLM providers for [Claude Code](https://claude.ai/code). Zero dependencies. No magic — just associative arrays and heredocs.
 
-When using [Claude Code](https://claude.ai/code), you're not limited to Anthropic's models. Providers like **Anthropic**, **Zhipu (GLM)**, **MiniMax**, **DeepSeek**, and **Mimo** expose Anthropic-compatible APIs. This project gives you two simple scripts to manage these providers.
+[Anthropic](https://api.anthropic.com), [Zhipu](https://open.bigmodel.cn), [MiniMax](https://minimax.chat), [DeepSeek](https://deepseek.com), [Mimo](https://mimoml.com) all expose Anthropic-compatible APIs. These scripts help you manage them.
 
-## Scripts
+## Why two scripts?
 
-### `ccs` — Provider Switch (global)
+The official `cc-switch` is heavy. `ccs` does the same thing in ~40 lines.
 
-Permanently switches Claude Code to use a specific provider by updating `~/.claude/settings.json`.
+Switching your global provider mid-session disrupts active conversations and ties all sessions to one provider's concurrency limits. `ccp` solves this — each invocation gets its own settings via `--settings`, leaving your global config untouched.
+
+## Usage
 
 ```bash
+# Switch global provider
 ccs <an|zp|mm|ds|mimo>
-```
 
-**What it does:**
-- Backs up your existing `settings.json` to `settings.json.bak`
-- Writes a new settings file with the chosen provider's API endpoint, API key, and model mapping
-- All subsequent `claude` invocations will use this provider
-
-### `ccp` — Provider Per-Invocation (isolated)
-
-One-shot `claude` launch with a specific provider, reading credentials from environment variables. Does **not** modify your global config. If no provider is given, falls back to `~/.claude/settings.json`.
-
-```bash
+# One-shot launch (reads credentials from env vars, no global change)
 ccp [an|zp|mm|ds|mimo] [claude options...]
 ```
 
-**What it does:**
-- Reads `<PREFIX>_BASE_URL` and `<PREFIX>_API_KEY` from environment variables, writes a temporary settings file to `.claude/settings-<provider>.json`, and launches `claude` with `--settings` pointing to that file
-- Without a provider, simply passes through to `claude` using your default `~/.claude/settings.json`
-- Your global config remains untouched in either case — other sessions are unaffected
-
-## Problems Solved
-
-### 1. `ccs` — A lighter alternative to `cc-switch`
-
-The official `cc-switch` carries a fair amount of baggage. `ccs` is a **~40-line Zsh script** that does exactly one thing: write the right provider into `settings.json`. No dependencies, no complexity — just a bash/zsh associative array and a heredoc.
-
-### 2. `ccp` — Session isolation with `--settings`
-
-Switching your global provider mid-session would disrupt any active Claude Code conversations and tie all sessions to a single provider's concurrency limits.
-
-`ccp` solves this by leveraging Claude Code's `--settings` flag. Each invocation gets its own settings file, so:
-- Your global provider stays unchanged — active sessions are never interrupted
-- Each session can use a different provider, bypassing concurrency limits on any single one
-- The whole thing is another **~40 lines of Zsh**
-
-## Provider-to-Model Mapping
+## Providers
 
 | Key | Provider | Sonnet | Opus | Haiku |
 |-----|----------|--------|------|-------|
@@ -59,70 +32,26 @@ Switching your global provider mid-session would disrupt any active Claude Code 
 | ds  | DeepSeek | deepseek-v4-pro | deepseek-v4-pro | deepseek-v4-flash |
 | mimo | Mimo    | mimo-v2.5-pro | mimo-v2.5-pro | mimo-v2.5-pro |
 
-## Environment Variables
-
-Both scripts read credentials from environment variables:
+## Setup
 
 ```bash
-export ANTHROPIC_BASE_URL="https://api.anthropic.com"
-export ANTHROPIC_API_KEY="your-key-here"
-
-export ZHIPU_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
-export ZHIPU_API_KEY="your-key-here"
-
-export MINIMAX_BASE_URL="https://api.minimax.chat/v1"
-export MINIMAX_API_KEY="your-key-here"
-
-export DEEPSEEK_BASE_URL="https://api.deepseek.com"
-export DEEPSEEK_API_KEY="your-key-here"
-
-export MIMO_BASE_URL="https://api.mimoml.com"
-export MIMO_API_KEY="your-key-here"
-```
-
-The API endpoint is formed by appending `/anthropic` to the base URL.
-
-## Installation
-
-### 1. Clone the repo
-
-```bash
+# 1. Clone
 git clone https://github.com/<your-username>/cc-bin.git ~/cc-bin
-```
 
-### 2. Add to PATH
-
-Add this line to your `~/.zshrc`:
-
-```bash
+# 2. Add to PATH in ~/.zshrc
 export PATH="$HOME/cc-bin:$PATH"
-```
 
-Then reload:
+# 3. Set credentials in ~/.zshrc (only need the ones you use)
+export ANTHROPIC_BASE_URL="https://api.anthropic.com"
+export ANTHROPIC_API_KEY="your-key"
+export DEEPSEEK_BASE_URL="https://api.deepseek.com"
+export DEEPSEEK_API_KEY="your-key"
+# ... etc
 
-```bash
 source ~/.zshrc
 ```
 
-### 3. Set credentials
-
-Add your provider credentials to `~/.zshrc` (or any shell config you source):
-
-```bash
-export DEEPSEEK_BASE_URL="https://api.deepseek.com"
-export DEEPSEEK_API_KEY="sk-..."
-# ... repeat for other providers
-```
-
-### 4. Give it a try
-
-```bash
-# Switch globally to DeepSeek
-ccs ds
-
-# ...or fire up a one-off session with MiniMax
-ccp mm
-```
+API endpoint = `BASE_URL` + `/anthropic`.
 
 ## License
 

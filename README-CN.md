@@ -3,7 +3,7 @@
 > [English](README.md)
 
 <p align="center">
-  <img src="display.png" width="100%" />
+  <img src="display.png" width="50%" />
 </p>
 
 两个 ~40 行的 Zsh 脚本，用于切换或隔离 [Claude Code](https://claude.ai/code) 的 LLM 提供商。零依赖，无魔法 — 只有关联数组和 heredoc。

@@ -26,7 +26,8 @@ if [[ -n "$provider" ]]; then
   read -r prefix sonnet opus haiku <<< "${PROVIDERS[$provider]}"
   base_var="${prefix}_BASE_URL"
   key_var="${prefix}_API_KEY"
-  base_url="${(P)base_var:?Error: $base_var not set}/anthropic"
+  base_url="${(P)base_var:?Error: $base_var not set}"
+  [[ "$base_url" != */anthropic ]] && base_url="${base_url}/anthropic"
   api_key="${(P)key_var:?Error: $key_var not set}"
 
   settings_file="${0:A:h}/.claude/settings-${provider}.json"

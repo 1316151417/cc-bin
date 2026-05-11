@@ -21,7 +21,8 @@ fi
 read -r prefix sonnet opus haiku <<< "${PROVIDERS[$key]}"
 base_var="${prefix}_BASE_URL"
 key_var="${prefix}_API_KEY"
-base_url="${(P)base_var:?}/anthropic"
+base_url="${(P)base_var:?}"
+[[ "$base_url" != */anthropic ]] && base_url="${base_url}/anthropic"
 api_key="${(P)key_var:?}"
 
 [[ -f "$TARGET_FILE" ]] && cp "$TARGET_FILE" "${TARGET_FILE}.bak"

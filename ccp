@@ -8,7 +8,7 @@ declare -A PROVIDERS=(
   [zp]="ZHIPU GLM-5.1 GLM-5.1 GLM-4.5-Air"
   [mm]="MINIMAX MiniMax-M2.7 MiniMax-M2.7 MiniMax-M2.7"
   [ds]="DEEPSEEK deepseek-v4-pro[1m] deepseek-v4-pro[1m] deepseek-v4-flash[1m]"
-  [mimo]="MIMO mimo-v2.5-pro mimo-v2.5-pro mimo-v2.5-pro"
+  [mimo]="MIMO mimo-v2.5-pro mimo-v2.5-pro mimo-v2.5"
 )
 
 # 解析参数

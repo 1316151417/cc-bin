@@ -32,7 +32,7 @@ ccp [an|zp|mm|ds|mimo] [claude options...]
 |-----|----------|--------|------|-------|
 | an  | Anthropic | claude-sonnet-4-6 | claude-opus-4-6 | claude-haiku-4-5 |
 | zp  | 智谱    | GLM-5.1 | GLM-5.1 | GLM-4.5-Air |
-| mm  | MiniMax  | MiniMax-M2.7 | MiniMax-M2.7 | MiniMax-M2.7 |
+| mm  | MiniMax  | MiniMax-M3 | MiniMax-M3 | MiniMax-M3 |
 | ds  | DeepSeek | deepseek-v4-pro | deepseek-v4-pro | deepseek-v4-flash |
 | mimo | Mimo    | mimo-v2.5-pro | mimo-v2.5-pro | mimo-v2.5-pro |
 

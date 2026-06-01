@@ -6,7 +6,7 @@ set -euo pipefail
 declare -A PROVIDERS=(
   [an]="ANTHROPIC claude-sonnet-4-6 claude-opus-4-6 claude-haiku-4-5"
   [zp]="ZHIPU GLM-5.1 GLM-5.1 GLM-4.5-Air"
-  [mm]="MINIMAX MiniMax-M2.7 MiniMax-M2.7 MiniMax-M2.7"
+  [mm]="MINIMAX MiniMax-M3 MiniMax-M3 MiniMax-M3"
   [ds]="DEEPSEEK deepseek-v4-pro[1m] deepseek-v4-pro[1m] deepseek-v4-flash[1m]"
   [mimo]="MIMO mimo-v2.5-pro mimo-v2.5-pro mimo-v2.5"
 )

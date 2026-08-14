@@ -15,7 +15,7 @@ This repo provides helper scripts for switching Claude Code between different LL
 
 | Key | Provider | Sonnet | Opus | Haiku |
 |-----|----------|--------|------|-------|
-| zp  | Zhipu    | GLM-5.2 | GLM-5.2 | GLM-4.5-Air |
+| zp  | Zhipu    | GLM-5.3 | GLM-5.3 | GLM-4.5-Air |
 | mm  | MiniMax  | MiniMax-M3 | MiniMax-M3 | MiniMax-M3 |
 | ds  | DeepSeek | deepseek-v4-flash | deepseek-v4-pro | deepseek-v4-flash |
 | mimo | Mimo    | mimo-v2.5-pro | mimo-v2.5-pro | mimo-v2.5-pro |

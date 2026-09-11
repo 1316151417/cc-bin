@@ -31,9 +31,9 @@ ccp [an|zp|mm|ds|mimo] [claude options...]
 | 键 | 提供商 | Sonnet | Opus | Haiku |
 |-----|----------|--------|------|-------|
 | an  | Anthropic | claude-sonnet-4-6 | claude-opus-4-6 | claude-haiku-4-5 |
-| zp  | 智谱    | GLM-5.2 | GLM-5.2 | GLM-4.5-Air |
+| zp  | 智谱    | GLM-5.3 | GLM-5.3 | GLM-5.3-Flash |
 | mm  | MiniMax  | MiniMax-M3 | MiniMax-M3 | MiniMax-M3 |
-| ds  | DeepSeek | deepseek-v4-pro | deepseek-v4-pro | deepseek-v4-flash |
+| ds  | DeepSeek | deepseek-flash | deepseek-flash | deepseek-flash |
 | mimo | Mimo    | mimo-v2.5-pro | mimo-v2.5-pro | mimo-v2.5-pro |
 
 ## 安装

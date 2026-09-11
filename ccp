@@ -7,7 +7,7 @@ declare -A PROVIDERS=(
   [an]="ANTHROPIC claude-sonnet-4-6 claude-opus-4-6 claude-haiku-4-5"
   [zp]="ZHIPU GLM-5.3 GLM-5.3 GLM-5.3-Flash"
   [mm]="MINIMAX MiniMax-M3 MiniMax-M3 MiniMax-M3"
-  [ds]="DEEPSEEK deepseek-v4-flash[1m] deepseek-v4-pro[1m] deepseek-v4-flash[1m]"
+  [ds]="DEEPSEEK deepseek-flash deepseek-flash deepseek-flash"
   [mimo]="MIMO mimo-v2.5-pro mimo-v2.5-pro mimo-v2.5"
 )
 

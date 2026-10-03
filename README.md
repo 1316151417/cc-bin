@@ -31,7 +31,7 @@ bash install.sh
 
 源码可以放在 `~/IdeaProjects/cc-bin` 等任意目录；`~/cc-bin` 用于安装命令，不存放源码仓库。安装结果不依赖源码目录，插件也不需要 `--plugin-dir`。
 
-源码脚本 `ccp`、`ccs` 和共享配置模块 `providers.zsh` 集中在 `lib/`，可直接运行 `./lib/ccp`、`./lib/ccs`。截图统一放在 `docs/images/`，现有截图为 [display.png](docs/images/display.png)，后续插件截图也放在这里。
+源码脚本 `ccp`、`ccs` 和共享配置模块 `providers.zsh` 集中在 `lib/`，可直接运行 `./lib/ccp`、`./lib/ccs`。截图统一放在 `docs/images/`，命令截图为 [display.png](docs/images/display.png)。
 
 安装器会在 `~/.zshrc` 缺少以下行时追加，已有则跳过：
 
@@ -79,6 +79,8 @@ claude --settings '{"tui":"fullscreen"}'
 ```
 
 只显示配置了 Key 的选项；方向键选择，Enter 切换，Esc 关闭。详见 [插件说明](cc-bin-plugin/README.md)。
+
+![Claude Code fullscreen 中的 /provider 选择器](docs/images/display-plugin.png)
 
 `ccs` 和 `/provider` **整体替换** `~/.claude/settings.json`，上一份保存在 `settings.json.bak`，其他使用全局配置的进程也可能受影响。
 

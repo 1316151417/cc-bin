@@ -2,25 +2,40 @@
 
 为 Claude Code 切换 Provider：只需配置 API Key，内置服务地址和模型映射。
 
+<table width="100%">
+  <tr>
+    <td width="50%" valign="top"><img src="docs/images/display.png" alt="ccs / ccp 命令截图" width="100%"></td>
+    <td width="50%" valign="top"><img src="docs/images/display-plugin.png" alt="fullscreen /provider 插件截图" width="100%"></td>
+  </tr>
+</table>
+
 - `ccs`：切换全局 Provider，运行中的 Claude Code 后续请求使用新配置。
 - `ccp`：指定 Provider 启动 Claude Code，使用独立配置，不修改全局设置。
 - `/provider`：fullscreen 内用官方 Select 选择 Provider，复用 `ccs`。
 
 ## 安装 / 更新
 
-需要 Bash、Zsh 和 Claude Code **2.1.288**。在线安装还需要 curl、tar；无需 npm install。
+`cc-bin` 安装需要 Zsh，`cc-bin-plugin` 安装需要 Claude Code **2.1.288**；全安装需要两者。安装器使用 Bash，在线安装还需要 curl、tar；无需 npm install。
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/1316151417/cc-bin/main/install.sh | bash
 ```
 
+不传参数默认全部安装。选择安装内容时，在同一在线命令后使用 `bash -s -- <模式>`，例如只安装插件：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/1316151417/cc-bin/main/install.sh | bash -s -- cc-bin-plugin
+```
+
 在本地源码目录安装当前版本：
 
 ```bash
-bash install.sh
+bash install.sh cc-bin         # 仅安装 / 更新 ccp、ccs
+bash install.sh cc-bin-plugin  # 仅安装 / 更新插件
+bash install.sh all            # 全部安装 / 更新（默认）
 ```
 
-两种方式都会安装 `ccs`、`ccp` 和插件，重复执行时三个组件都会重新生成并更新，包括共享 Provider 定义和插件的全部 hooks 文件；旧插件中已移除的文件也会清理。在线命令获取最新版本；本地命令安装当前工作区内容，不修改或更新源码。
+在线和本地安装共用三种模式；`bash install.sh --help` 可查看用法。仅命令模式只更新两个命令和 PATH，仅插件模式只更新插件；选择器仍需要已有 `ccs` 在 PATH 中。全部安装会更新三个组件。重复执行会重新生成所选命令及共享 Provider 定义，更新所选插件的全部 hooks，并清理插件旧文件。在线命令获取最新版本；本地命令安装当前工作区内容，不修改或更新源码。
 
 成功时只显示完成提示和会话启动提示，首次添加 PATH 时额外提醒打开新终端；校验失败时显示详细诊断，并保留已安装版本。
 
@@ -33,7 +48,7 @@ bash install.sh
 
 源码脚本 `ccp`、`ccs` 和共享配置模块 `providers.zsh` 集中在 `lib/`，可直接运行 `./lib/ccp`、`./lib/ccs`。截图统一放在 `docs/images/`。
 
-安装器会在 `~/.zshrc` 缺少以下行时追加，已有则跳过：
+安装命令时，安装器会在 `~/.zshrc` 缺少以下行时追加，已有则跳过；仅插件模式保留原 PATH 配置：
 
 ```zsh
 export PATH="$HOME/cc-bin:$PATH"
@@ -71,8 +86,6 @@ ccp zp --model opus     # 透传 Claude 参数
 ccs --list              # 只读 JSON 列表；ccp --list 同样支持
 ```
 
-![ccs 切换 Provider 与 ccp 独立启动的命令截图](docs/images/display.png)
-
 在 fullscreen 中使用选择器：
 
 ```sh
@@ -81,8 +94,6 @@ claude --settings '{"tui":"fullscreen"}'
 ```
 
 只显示配置了 Key 的选项；方向键选择，Enter 切换，Esc 关闭。可用 `claude plugin list` 查看安装结果，插件 ID 为 `cc-bin-provider@skills-dir`。
-
-![Claude Code fullscreen 中的 /provider 选择器](docs/images/display-plugin.png)
 
 `ccs` 和 `/provider` **整体替换** `~/.claude/settings.json`，上一份保存在 `settings.json.bak`，其他使用全局配置的进程也可能受影响。
 

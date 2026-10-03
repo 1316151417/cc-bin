@@ -18,6 +18,8 @@ This repo provides helper scripts and a fullscreen plugin for switching Claude C
 
 Root-level visible files are `README.md`, `install.sh` and `CLAUDE.md`. Keep command sources in `lib/`, plugin sources in `cc-bin-plugin/`, tests in `tests/` and screenshots in `docs/images/`. Installed commands remain at `~/cc-bin/ccs` and `~/cc-bin/ccp`.
 
+`install.sh [cc-bin|cc-bin-plugin|all]` defaults to all components. Selective installation updates only the chosen component; CLI installation manages PATH, while plugin-only installation leaves commands and shell configuration untouched. The plugin still requires an existing `ccs` on PATH at runtime.
+
 Provider discovery uses nonblank API Keys. Endpoints are built in; BASE_URL environment variables are ignored. Use an API suffix in IDs and picker labels only to distinguish an API entry from the same provider's Coding Plan entry.
 
 ## .claude/ directory

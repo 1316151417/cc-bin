@@ -14,11 +14,14 @@ ROOT = Path(__file__).resolve().parents[1]
 PATH_LINE = 'export PATH="$HOME/cc-bin:$PATH"'
 
 
-def assert_install_output(result, path_added=False):
-    expected = [
-        '✓ cc-bin ready: ccp, ccs, cc-bin-plugin.',
-        'Open a new fullscreen Claude Code session and enter /provider.',
-    ]
+def assert_install_output(result, path_added=False, mode='all'):
+    expected = {
+        'all': ['✓ cc-bin ready: ccp, ccs, cc-bin-plugin.',
+                'Open a new fullscreen Claude Code session and enter /provider.'],
+        'cc-bin': ['✓ cc-bin ready: ccp, ccs.', 'Run ccs <provider> or ccp <provider>.'],
+        'cc-bin-plugin': ['✓ cc-bin-plugin ready.',
+                          'Start fullscreen Claude Code and enter /provider (requires ccs on PATH).'],
+    }[mode]
     if path_added:
         expected.insert(0, 'PATH added to ~/.zshrc; open a new terminal.')
     assert result.stdout.splitlines() == expected, "Successful install output was not concise"
@@ -29,6 +32,10 @@ def run(argv, env, cwd, success=True, input=None):
     result = subprocess.run(argv, env=env, cwd=cwd, input=input, capture_output=True, text=True, timeout=30)
     assert (result.returncode == 0) == success, f"Unexpected status for {argv[0]} (output withheld)"
     return result
+
+
+def snapshot_files(directory):
+    return {str(p.relative_to(directory)): fingerprint(p) for p in directory.rglob('*') if p.is_file()}
 
 
 def main():
@@ -56,8 +63,9 @@ def main():
                 return {"HOME": str(home), "CLAUDE_CONFIG_DIR": str(home / ".claude"),
                         "PATH": f"{Path(claude).parent}:{os.defpath}"}
 
-            def install(home, success=True):
-                return run([bash, str(fixture / "install.sh")], environment(home), home, success)
+            def install(home, success=True, mode=None):
+                args = [mode] if mode else []
+                return run([bash, str(fixture / "install.sh"), *args], environment(home), home, success)
 
             def update_source(tag, version):
                 for name in ('lib/ccs', 'lib/ccp', 'lib/providers.zsh'):
@@ -71,10 +79,13 @@ def main():
                 module = hooks_dir / json.loads((hooks_dir / 'hooks.json').read_text())['modules'][0]
                 module.write_text(module.read_text() + f'\n// {tag}\n')
 
-            def assert_updated(home, tag, version):
-                for name in ('ccs', 'ccp'):
-                    installed = (home / 'cc-bin' / name).read_text()
-                    assert installed.count(f'# {tag}') == 2, f'{name} or shared Provider definitions were not updated'
+            def assert_updated(home, tag, version, mode='all'):
+                if mode != 'cc-bin-plugin':
+                    for name in ('ccs', 'ccp'):
+                        installed = (home / 'cc-bin' / name).read_text()
+                        assert installed.count(f'# {tag}') == 2, f'{name} or shared Provider definitions were not updated'
+                if mode == 'cc-bin':
+                    return
                 plugin = home / '.claude/skills/cc-bin-provider'
                 assert json.loads((plugin / '.claude-plugin/plugin.json').read_text())['version'] == version
                 source_hooks = fixture / 'cc-bin-plugin/hooks'
@@ -192,6 +203,74 @@ cp "$TEST_ARCHIVE" "$destination"
             install(legacy)
             assert old_link.is_dir() and not old_link.is_symlink()
 
+            # CLI-only installation needs no Claude binary or valid/unowned plugin.
+            cli_home = work / 'cli-only'
+            cli_env = environment(cli_home) | {'PATH': f'{Path(zsh).parent}:{os.defpath}'}
+            assert not shutil.which('claude', path=cli_env['PATH']), 'CLI-only fixture must exclude Claude'
+            untouched_plugin = cli_home / '.claude/skills/cc-bin-provider'
+            untouched_plugin.mkdir(parents=True)
+            (untouched_plugin / 'keep').write_text('unmanaged plugin sentinel')
+            saved_plugin = snapshot_files(untouched_plugin)
+            manifest_bytes = manifest.read_bytes()
+            manifest.write_text('not json')
+            try:
+                result = run([bash, str(fixture / 'install.sh'), 'cc-bin'], cli_env, cli_home)
+                assert_install_output(result, path_added=True, mode='cc-bin')
+            finally:
+                manifest.write_bytes(manifest_bytes)
+            assert_updated(cli_home, 'remote update fixture', '0.2.2', mode='cc-bin')
+            assert snapshot_files(untouched_plugin) == saved_plugin
+            saved_cli_rc = fingerprint(cli_home / '.zshrc')
+
+            # Plugin-only installation creates neither commands nor shell configuration.
+            plugin_home = work / 'plugin-only'
+            assert_install_output(install(plugin_home, mode='cc-bin-plugin'), mode='cc-bin-plugin')
+            assert not (plugin_home / 'cc-bin').exists()
+            assert not (plugin_home / '.zshrc').exists()
+            assert_updated(plugin_home, 'remote update fixture', '0.2.2', mode='cc-bin-plugin')
+            commands = plugin_home / 'cc-bin'
+            (commands / '.git').mkdir(parents=True)
+            for name in ('ccs', 'ccp'):
+                (commands / name).write_text(f'existing {name} sentinel')
+            (plugin_home / '.zshrc').write_text('existing shell configuration')
+            saved_commands = snapshot_files(commands)
+            saved_plugin_rc = fingerprint(plugin_home / '.zshrc')
+
+            update_source('selective update fixture', '0.2.3')
+            assert_install_output(install(cli_home, mode='cc-bin'), mode='cc-bin')
+            assert_updated(cli_home, 'selective update fixture', '0.2.3', mode='cc-bin')
+            assert snapshot_files(untouched_plugin) == saved_plugin
+            assert fingerprint(cli_home / '.zshrc') == saved_cli_rc
+            hidden_lib = work / 'hidden-lib'
+            (fixture / 'lib').rename(hidden_lib)
+            try:
+                assert_install_output(install(plugin_home, mode='cc-bin-plugin'), mode='cc-bin-plugin')
+                assert_updated(plugin_home, 'selective update fixture', '0.2.3', mode='cc-bin-plugin')
+            finally:
+                hidden_lib.rename(fixture / 'lib')
+            assert snapshot_files(commands) == saved_commands
+            assert fingerprint(plugin_home / '.zshrc') == saved_plugin_rc
+
+            # Every explicit mode also works through curl | bash -s -- <mode>.
+            package_source()
+            for mode in ('cc-bin', 'cc-bin-plugin', 'all'):
+                selective_home = work / f'remote-{mode}'
+                selective_env = environment(selective_home) | {'PATH': remote_env['PATH'], 'TEST_ARCHIVE': str(archive)}
+                result = run([bash, '-s', '--', mode], selective_env, selective_home, input=(ROOT / 'install.sh').read_text())
+                assert_install_output(result, path_added=mode != 'cc-bin-plugin', mode=mode)
+                assert_updated(selective_home, 'selective update fixture', '0.2.3', mode=mode)
+                assert (selective_home / 'cc-bin').exists() == (mode != 'cc-bin-plugin')
+                assert (selective_home / '.claude/skills/cc-bin-provider').exists() == (mode != 'cc-bin')
+                assert (selective_home / '.zshrc').exists() == (mode != 'cc-bin-plugin')
+
+            invalid_home = work / 'invalid-options'
+            invalid_env = environment(invalid_home)
+            for args in (['unknown'], ['cc-bin', 'cc-bin-plugin']):
+                run([bash, str(fixture / 'install.sh'), *args], invalid_env, invalid_home, success=False)
+            help_result = run([bash, str(fixture / 'install.sh'), '--help'], invalid_env, invalid_home)
+            assert '[cc-bin|cc-bin-plugin|all]' in help_result.stdout
+            assert not list(invalid_home.iterdir()), 'Invalid arguments or help changed the filesystem'
+
             # Invalid downloaded/local plugin must leave the previously installed version untouched.
             installed_paths = [bin_dir / 'ccs', bin_dir / 'ccp', *[p for p in plugin.rglob('*') if p.is_file()]]
             config_before = {str(p): fingerprint(p) for p in installed_paths}
@@ -203,7 +282,7 @@ cp "$TEST_ARCHIVE" "$destination"
             assert fingerprint(rc) == saved_rc
     finally:
         assert [fingerprint(path) for path in real_files] == before, "Real .zshrc or settings changed"
-    print("PASS: concise output, local/remote updates of ccs/ccp/shared presets/all plugin hooks, stale file removal, Mod autoload, PATH deduplication and failure safety; real config unchanged.")
+    print("PASS: all three local/online install modes, isolated selective updates, concise output, complete hook updates, stale file removal, Mod autoload, PATH deduplication and failure safety; real config unchanged.")
 
 
 if __name__ == "__main__":

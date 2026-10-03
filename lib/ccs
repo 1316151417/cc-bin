@@ -4,7 +4,7 @@ set -euo pipefail
 
 TARGET_FILE="$HOME/.claude/settings.json"
 
-source "${0:A:h}/lib/providers.zsh"
+source "${0:A:h}/providers.zsh"
 
 case "${1:-}" in
   --list) list_providers; exit 0 ;;

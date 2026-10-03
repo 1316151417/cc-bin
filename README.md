@@ -31,6 +31,8 @@ bash install.sh
 
 源码可以放在 `~/IdeaProjects/cc-bin` 等任意目录；`~/cc-bin` 用于安装命令，不存放源码仓库。安装结果不依赖源码目录，插件也不需要 `--plugin-dir`。
 
+源码脚本 `ccp`、`ccs` 和共享配置模块 `providers.zsh` 集中在 `lib/`，可直接运行 `./lib/ccp`、`./lib/ccs`。截图统一放在 `docs/images/`，现有截图为 [display.png](docs/images/display.png)，后续插件截图也放在这里。
+
 安装器会在 `~/.zshrc` 缺少以下行时追加，已有则跳过：
 
 ```zsh

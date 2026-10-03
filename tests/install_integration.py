@@ -43,7 +43,7 @@ def main():
             work = Path(directory)
             fixture = work / "source checkout"
             fixture.mkdir()
-            for relative in ("install.sh", "ccs", "ccp", "lib/providers.zsh",
+            for relative in ("install.sh", "lib/ccs", "lib/ccp", "lib/providers.zsh",
                              "cc-bin-plugin/.claude-plugin/plugin.json", "cc-bin-plugin/hooks/hooks.json",
                              "cc-bin-plugin/hooks/register.tsx"):
                 target = fixture / relative
@@ -60,7 +60,7 @@ def main():
                 return run([bash, str(fixture / "install.sh")], environment(home), home, success)
 
             def update_source(tag, version):
-                for name in ('ccs', 'ccp', 'lib/providers.zsh'):
+                for name in ('lib/ccs', 'lib/ccp', 'lib/providers.zsh'):
                     path = fixture / name
                     path.write_text(path.read_text() + f'\n# {tag}\n')
                 manifest = fixture / 'cc-bin-plugin/.claude-plugin/plugin.json'

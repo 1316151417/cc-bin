@@ -37,7 +37,7 @@ source_dir=""
 if [[ -n "${BASH_SOURCE[0]:-}" ]]; then
   source_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 fi
-if [[ -z "$source_dir" || ! -f "$source_dir/ccs" || ! -f "$source_dir/ccp" ]]; then
+if [[ -z "$source_dir" || ! -f "$source_dir/lib/ccs" || ! -f "$source_dir/lib/ccp" ]]; then
   curl -fsSL https://codeload.github.com/1316151417/cc-bin/tar.gz/refs/heads/main -o "$staging/source.tar.gz"
   tar -xzf "$staging/source.tar.gz" -C "$staging"
   source_dir="$staging/cc-bin-main"
@@ -63,13 +63,13 @@ fi
 for name in ccs ccp; do
   embedded=0
   while IFS= read -r line || [[ -n "$line" ]]; do
-    if [[ "$line" == 'source "${0:A:h}/lib/providers.zsh"' ]]; then
+    if [[ "$line" == 'source "${0:A:h}/providers.zsh"' ]]; then
       cat "$source_dir/lib/providers.zsh"
       embedded=1
     else
       printf '%s\n' "$line"
     fi
-  done < "$source_dir/$name" > "$staging/$name"
+  done < "$source_dir/lib/$name" > "$staging/$name"
   if [[ "$embedded" != 1 ]]; then
     printf 'Could not bundle Provider definitions into %s.\n' "$name" >&2
     exit 1

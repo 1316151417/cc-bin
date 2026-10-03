@@ -37,7 +37,7 @@ def wait_for_files(paths, failure_message):
         time.sleep(0.02)
 
 
-def exercise_ccp(root, directory):
+def exercise_ccp(commands_dir, directory):
     launch_home = directory / "launch-home"
     settings = launch_home / ".claude/settings.json"
     settings.parent.mkdir(parents=True)
@@ -76,7 +76,7 @@ sys.exit(int(os.environ.get("TEST_EXIT", "0")))
     capture = directory / "launch.json"
     child_env = {"HOME": str(launch_home), "PATH": f"{fake_bin}:{os.defpath}",
                  "TMPDIR": str(temporary), "TEST_CAPTURE": str(capture)}
-    ccp = str(root / "ccp")
+    ccp = str(commands_dir / "ccp")
 
     def run(args, variables=None, code=0, launched=True):
         capture.unlink(missing_ok=True)
@@ -185,8 +185,8 @@ sys.exit(int(os.environ.get("TEST_EXIT", "0")))
 
 
 def main():
-    root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
-    ccs = str(root / "ccs")
+    commands_dir = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / "lib"
+    ccs = str(commands_dir / "ccs")
 
     real_settings = Path.home() / ".claude/settings.json"
     real_backup = real_settings.with_suffix(".json.bak")
@@ -271,7 +271,7 @@ def main():
             backup.unlink()
             backup.mkdir()
             rejected("ds", credentials)
-            exercise_ccp(root, Path(directory))
+            exercise_ccp(commands_dir, Path(directory))
     finally:
         assert before == (fingerprint(real_settings), fingerprint(real_backup)), "Real settings or backup changed"
 

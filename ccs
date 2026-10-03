@@ -37,7 +37,8 @@ cat > "$TARGET_FILE" <<EOF
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "$sonnet",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "$opus",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "$haiku"
-  }
+  },
+  "tui": "fullscreen"
 }
 EOF
 

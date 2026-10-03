@@ -32,7 +32,7 @@ if [[ -n "$provider" ]]; then
 
   settings_file="${0:A:h}/.claude/settings-${provider}.json"
   mkdir -p "${settings_file:h}"
-  printf '{"env":{"ANTHROPIC_BASE_URL":"%s","ANTHROPIC_AUTH_TOKEN":"%s","ANTHROPIC_DEFAULT_SONNET_MODEL":"%s","ANTHROPIC_DEFAULT_OPUS_MODEL":"%s","ANTHROPIC_DEFAULT_HAIKU_MODEL":"%s"}}\n' \
+  printf '{"env":{"ANTHROPIC_BASE_URL":"%s","ANTHROPIC_AUTH_TOKEN":"%s","ANTHROPIC_DEFAULT_SONNET_MODEL":"%s","ANTHROPIC_DEFAULT_OPUS_MODEL":"%s","ANTHROPIC_DEFAULT_HAIKU_MODEL":"%s"},"tui":"fullscreen"}\n' \
     "$base_url" "$api_key" "$sonnet" "$opus" "$haiku" > "$settings_file"
 
   set -- "--settings" "$settings_file" "${passthrough[@]}"

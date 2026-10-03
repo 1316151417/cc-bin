@@ -18,7 +18,7 @@ This repo provides helper scripts for switching Claude Code between different LL
 | zp  | Zhipu    | GLM-5.3 | GLM-5.3 | GLM-5.3-Flash |
 | mm  | MiniMax  | MiniMax-M3 | MiniMax-M3 | MiniMax-M3 |
 | ds  | DeepSeek | deepseek-flash | deepseek-flash | deepseek-flash |
-| mimo | Mimo    | mimo-v2.5-pro | mimo-v2.5-pro | mimo-v2.5-pro |
+| mimo | Mimo    | mimo-v2.6-pro | mimo-v2.6-pro | mimo-v2.6-flash |
 
 ## Environment variables
 

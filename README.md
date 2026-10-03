@@ -1,61 +1,60 @@
 # cc-bin
 
-> [中文说明](README-CN.md)
-
 <p align="center">
   <img src="display.png" width="50%" />
 </p>
 
-Two ~40-line Zsh scripts to switch or isolate LLM providers for [Claude Code](https://claude.ai/code). Zero dependencies. No magic — just associative arrays and heredocs.
+两个 ~40 行的 Zsh 脚本，用于切换或隔离 [Claude Code](https://claude.ai/code) 的 LLM 提供商。零依赖，无魔法 — 只有关联数组和 heredoc。
 
-[Anthropic](https://api.anthropic.com), [Zhipu](https://open.bigmodel.cn), [MiniMax](https://minimax.chat), [DeepSeek](https://deepseek.com), [Mimo](https://mimoml.com) all expose Anthropic-compatible APIs. These scripts help you manage them.
+[智谱](https://open.bigmodel.cn)、[MiniMax](https://minimax.chat)、[DeepSeek](https://deepseek.com)、[Mimo](https://mimoml.com) 都提供 Anthropic 兼容的 API。这两个脚本帮你管理它们。
 
-## Why two scripts?
+## 为什么是两个脚本？
 
-The official `cc-switch` is heavy. `ccs` does the same thing in ~40 lines.
+官方 `cc-switch` 太重了。`ccs` 做同样的事只要 ~40 行。
 
-Switching your global provider mid-session disrupts active conversations and ties all sessions to one provider's concurrency limits. `ccp` solves this — each invocation gets its own settings via `--settings`, leaving your global config untouched.
+运行中切换全局提供商会中断活跃会话，且所有会话共享同一个提供商的并发限制。`ccp` 解决了这个问题 — 每次调用通过 `--settings` 使用独立配置，全局配置不受影响。
 
-## Usage
+## 用法
 
 ```bash
-# Switch global provider
-ccs <an|zp|mm|ds|mimo>
+# 切换全局提供商
+ccs <zp|mm|ds|mimo>
 
-# One-shot launch (reads credentials from env vars, no global change)
-ccp [an|zp|mm|ds|mimo] [claude options...]
+# 单次启动（从环境变量读取凭证，不改全局配置）
+ccp [zp|mm|ds|mimo] [claude options...]
 ```
 
-## Providers
+两个脚本生成的配置均默认启用全屏模式（`"tui": "fullscreen"`）。
 
-| Key | Provider | Sonnet | Opus | Haiku |
+## 提供商
+
+| 键 | 提供商 | Sonnet | Opus | Haiku |
 |-----|----------|--------|------|-------|
-| an  | Anthropic | claude-sonnet-4-6 | claude-opus-4-6 | claude-haiku-4-5 |
-| zp  | Zhipu    | GLM-5.3 | GLM-5.3 | GLM-5.3-Flash |
+| zp  | 智谱    | GLM-5.3 | GLM-5.3 | GLM-5.3-Flash |
 | mm  | MiniMax  | MiniMax-M3 | MiniMax-M3 | MiniMax-M3 |
 | ds  | DeepSeek | deepseek-flash | deepseek-flash | deepseek-flash |
-| mimo | Mimo    | mimo-v2.5-pro | mimo-v2.5-pro | mimo-v2.5-pro |
+| mimo | Mimo    | mimo-v2.6-pro | mimo-v2.6-pro | mimo-v2.6-flash |
 
-## Setup
+## 安装
 
 ```bash
-# 1. Clone
+# 1. 克隆
 git clone https://github.com/<your-username>/cc-bin.git ~/cc-bin
 
-# 2. Add to PATH in ~/.zshrc
+# 2. 添加到 ~/.zshrc 的 PATH
 export PATH="$HOME/cc-bin:$PATH"
 
-# 3. Set credentials in ~/.zshrc (only need the ones you use)
-export ANTHROPIC_BASE_URL="https://api.anthropic.com"
-export ANTHROPIC_API_KEY="your-key"
+# 3. 在 ~/.zshrc 中设置凭证（只填你用到的）
+export ZHIPU_BASE_URL="https://open.bigmodel.cn"
+export ZHIPU_API_KEY="你的密钥"
 export DEEPSEEK_BASE_URL="https://api.deepseek.com"
-export DEEPSEEK_API_KEY="your-key"
-# ... etc
+export DEEPSEEK_API_KEY="你的密钥"
+# ... 其他同理
 
 source ~/.zshrc
 ```
 
-API endpoint = `BASE_URL` + `/anthropic`.
+API 地址 = `BASE_URL` + `/anthropic`。
 
 ## License
 

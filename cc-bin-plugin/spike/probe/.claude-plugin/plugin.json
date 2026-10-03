@@ -1,0 +1,6 @@
+{
+  "name": "provider-api-spike",
+  "version": "0.0.0",
+  "description": "Read-only provider capability probe; not a provider switcher",
+  "author": { "name": "cc-bin-plugin" }
+}

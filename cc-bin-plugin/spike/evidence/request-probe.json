@@ -1,0 +1,23 @@
+{
+  "version": "2.1.288 (Claude Code)\nCommit: 17fe1eb736e5b1433d6ca86a1db334cec8520450",
+  "probe_loaded": true,
+  "types_version": "// Written by Claude Code 2.1.288.",
+  "request_exit": 0,
+  "answered": true,
+  "hook_counts": {
+    "steps": 1,
+    "envReads": 0,
+    "httpFetches": 0,
+    "completions": 0
+  },
+  "initial_endpoint": [
+    {
+      "path": "/v1/messages?beta=true",
+      "model": "claude-haiku-4-5-20251001",
+      "initial_key": true,
+      "initial_token": true
+    }
+  ],
+  "attempted_endpoint": [],
+  "settings_unchanged": true
+}

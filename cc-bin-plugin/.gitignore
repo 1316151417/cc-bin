@@ -1,0 +1,6 @@
+spike/probe/.claude-plugin/types/
+spike/probe/tsconfig.json
+__pycache__/
+.DS_Store
+.claude-plugin/types/
+/tsconfig.json

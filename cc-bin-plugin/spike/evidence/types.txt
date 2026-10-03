@@ -1,0 +1,577 @@
+Exact excerpts of engine-generated declarations (not hand-written types).
+Source: .claude-plugin/types/claude-code/index.d.ts
+Full file SHA-256: d0531eb1b9f9a05f5da139cdce07dacf59171a8608d8a3c262902f44c368ed5e
+
+--- original lines 1-13 ---
+1: // Written by Claude Code 2.1.288.
+2: // Claude Code function hooks: the plugin API's TypeScript declarations.
+3: //
+4: // EARLY ACCESS: this surface may change between releases without notice.
+5: // Written by the engine each time it loads a mod from a folder the person
+6: // owns, beside that mod as .claude-plugin/types/claude-code/index.d.ts;
+7: // written again after an update rather than edited. The first line names
+8: // the Claude Code version that wrote it. TypeScript 5.4 or newer reads it.
+9: // `claude plugin validate <dir>` is the other half: it reads a plugin's
+10: // manifest and its hooks module's source the way the engine will and
+11: // reports what the module hooks and calls and everything the engine would
+12: // refuse, before any session loads it.
+13: //
+
+--- original lines 2383-2415 ---
+2383:       };
+2384:       /**
+2385:        * Completions through the session's own client and credentials.
+2386:        */
+2387:       model: {
+2388:           /**
+2389:            * Runs one text completion through the session's own API client and
+2390:            * resolves a result: the reply's text and cost, or why there is no text.
+2391:            *
+2392:            * No tools, no history, no system prompt beyond the CLI's identity block
+2393:            * and `request.system`; ModelCompleteRequest says the rest. Only a request
+2394:            * the engine refuses to send (a blocked model, a bad cap) rejects.
+2395:            *
+2396:            * @param request the model (an alias such as `haiku`, or a full id
+2397:            *                resolved like `--model`), prompt, cap, effort, time limit
+2398:            * @param options `signal`: the plugin's own AbortSignal; aborting it
+2399:            *   cuts the call while it runs, which then resolves `aborted`
+2400:            * @returns the reply (`isAnswered`, `text`, `usage`), else the `reason`:
+2401:            *          `api-error` with `status` and `error`, `empty-reply`, `aborted`
+2402:            * @example
+2403:            * const r = await $.model.complete({ model: "haiku", prompt, effort })
+2404:            * @example
+2405:            * // one handler starts it, a later one cancels it while it runs
+2406:            * let stop = new AbortController()
+2407:            * const start = async () => {
+2408:            *   stop = new AbortController()
+2409:            *   const r = await $.model.complete(ask, { signal: stop.signal })
+2410:            *   if (!r.isAnswered && r.reason === "aborted") $.ui.log("cancelled")
+2411:            * }
+2412:            * const cancel = () => stop.abort()
+2413:            */
+2414:           complete: (request: ModelCompleteRequest, options?: ModelCompleteOptions) => Promise<ModelCompleteResult>;
+2415:           /**
+
+--- original lines 2530-2711 ---
+2530:       /**
+2531:        * The running session, read as plain data; compacting it; and sending a
+2532:        * message from it to another agent or session.
+2533:        */
+2534:       session: {
+2535:           /**
+2536:            * Returns the transcript so far, one SessionMessage per user or assistant
+2537:            * message; progress rows, `$.ui.log` lines and notices are not messages.
+2538:            *
+2539:            * With `{ agentId }`, one of this session's agents' instead (a subagent, a
+2540:            * fork, a teammate in this process): what the session saved for it joined
+2541:            * with what the engine holds. With `{ as: "api" }`, either as ApiMessage.
+2542:            *
+2543:            * @param args `agentId`, the id `tool.call`, `turn.complete` and `$.agent
+2544:            *             .list()` carry; `as: "api"` for ApiMessage; hooks see both
+2545:            * @returns the newest 4096 entries, `{ role, text, toolUses }` (a user
+2546:            *          message may add `toolResults`; a `toolUses` entry adds `result`
+2547:            *          and `text` once answered, an Agent tool use its `agentId`), or
+2548:            *          with `as` `{ role, content }`, blocks intact, at most 4096
+2549:            *          opening on a user message; for an `agentId` the session
+2550:            *          cannot read, `{ deny }` (SessionMessagesDeny), never main
+2551:            * @example
+2552:            * const last = (await $.session.messages()).at(-1)
+2553:            * @example
+2554:            * const request = await $.session.messages({ as: "api" })
+2555:            * await $.http.fetch(AUDIT_URL, {
+2556:            *   method: "POST",
+2557:            *   body: JSON.stringify({ session: await $.session.id(), request }),
+2558:            * })
+2559:            * @example
+2560:            * on("turn.complete", async ($, e, next) => {
+2561:            *   if (e.agentId === undefined) return next(e)
+2562:            *   const found = await $.session.messages({ agentId: e.agentId })
+2563:            *   if (!("deny" in found)) $.ui.log(`${found.length} messages`)
+2564:            *   return next(e)
+2565:            * })
+2566:            */
+2567:           messages: SessionMessagesCall;
+2568:           /**
+2569:            * Returns the directory the session runs in, absolute.
+2570:            */
+2571:           cwd: () => Promise<string>;
+2572:           /**
+2573:            * Returns the session's project root, absolute: where it started, or
+2574:            * where `/cd`, a host's directory change or a worktree move took it.
+2575:            *
+2576:            * A shell `cd` during the session does not move it; nested instruction
+2577:            * files are read only beneath it.
+2578:            */
+2579:           root: () => Promise<string>;
+2580:           /**
+2581:            * Returns the main loop's model, as `/model` shows it.
+2582:            */
+2583:           model: () => Promise<string>;
+2584:           /**
+2585:            * Returns how many prompts the user has sent this session (user turns in
+2586:            * the transcript).
+2587:            */
+2588:           turns: () => Promise<number>;
+2589:           /**
+2590:            * Returns the session's id (the transcript file's name).
+2591:            */
+2592:           id: () => Promise<string>;
+2593:           /**
+2594:            * Returns the git repository the session runs in, read from the working
+2595:            * copy on each call; null when the directory is not inside one.
+2596:            *
+2597:            * @example
+2598:            * const repo = await $.session.repo(); const publicRepo = !repo?.internal
+2599:            */
+2600:           repo: () => Promise<SessionRepo | null>;
+2601:           /**
+2602:            * Returns every surface the session draws on, each once: `terminal` under
+2603:            * the REPL first, then the remote ones in the order they attached.
+2604:            *
+2605:            * A session may draw on several at once (a terminal and two phones):
+2606:            * clients attach (`session.attach`) and detach, and a render hook still
+2607:            * reads `e.surface` per ask. Empty in a plain -p run; never rejects.
+2608:            *
+2609:            * @example
+2610:            * const inApp = (await $.session.surfaces()).some(s => s !== "terminal")
+2611:            */
+2612:           surfaces: () => Promise<readonly RenderSurface[]>;
+2613:           /**
+2614:            * Returns the first of `$.session.surfaces()`, or null where nothing
+2615:            * draws.
+2616:            *
+2617:            * @deprecated use `surfaces()`; a session may draw on several surfaces at
+2618:            *             once
+2619:            */
+2620:           surface: () => Promise<RenderSurface | null>;
+2621:           /**
+2622:            * Returns when the session began, and the context window's fill, the
+2623:            * rate-limit windows and the cost as the status line has them, itemized.
+2624:            *
+2625:            * The plain call costs nothing; `"full"` counts each category with the
+2626:            * token-count API as /context does, `"summary"` estimates locally, and
+2627:            * `context.breakdown` comes back in the SDK's `get_context_usage` shape.
+2628:            *
+2629:            * @param args `{ breakdown, columns }`: how the breakdown is counted and
+2630:            *   the width its grid is drawn in; nothing for the status line's figures
+2631:            * @returns `{ startedAt, context, rateLimits, cost }` as the status line
+2632:            *   has them
+2633:            * @example
+2634:            * const { context } = await $.session.usage()
+2635:            * if ((context.percent ?? 0) >= 85) await $.session.compact()
+2636:            * @example
+2637:            * const isOlder = stat.mtimeMs < (await $.session.usage()).startedAt
+2638:            * @example
+2639:            * const usage = await $.session.usage({ breakdown: "full", columns })
+2640:            * for (const row of usage.context.breakdown?.gridRows ?? []) draw(row)
+2641:            */
+2642:           usage: (args?: SessionUsageArgs) => Promise<SessionUsage>;
+2643:           /**
+2644:            * Returns the version of the engine the session runs on, the release it
+2645:            * is built from, and when it was built.
+2646:            *
+2647:            * The same three values the engine's own analytics rows carry, answered
+2648:            * in every mode and build; `base` is absent when the version is not
+2649:            * spelled as a release, `builtAt` in a run from source that stamps none.
+2650:            *
+2651:            * @returns the full `version`, its release `base` (`2.1.280`, or
+2652:            *          `2.1.280-dev` for a development build) and an ISO `builtAt`
+2653:            * @example
+2654:            * const { version, base, builtAt } = await $.session.version()
+2655:            * row.env = { version, version_base: base, build_time: builtAt }
+2656:            * @example
+2657:            * const isRelease = !(await $.session.version()).base?.endsWith("-dev")
+2658:            */
+2659:           version: () => Promise<SessionVersion>;
+2660:           /**
+2661:            * Compacts the conversation: the event `session.compact` with `trigger`
+2662:            * `plugin`, the same call `/compact` makes, between turns.
+2663:            *
+2664:            * It runs through every hook but the calling one, then core: a summary
+2665:            * and the kept messages in the transcript's place. Resolves `{ skip }`
+2666:            * when a hook vetoed it; rejects while a turn runs.
+2667:            *
+2668:            * @example
+2669:            * const { skip } = await $.session.compact({ instructions: "the plan" })
+2670:            */
+2671:           compact: EventCalls['session']['compact'];
+2672:           /**
+2673:            * Sends a plain-text message to another agent or session: the event
+2674:            * `session.send`, the model's SendMessage tool's own call and delivery.
+2675:            *
+2676:            * `to` is the tool's spelling (a name, an agent id, a received `from`
+2677:            * address) or `{ sessionId }` / `{ agentId }`; framed at the receiver as a
+2678:            * peer's, `origin.plugin` naming this plugin there. Resolves once queued.
+2679:            *
+2680:            * @example
+2681:            * const sent = await $.session.send({ to: { sessionId }, text: "ok" })
+2682:            * @example
+2683:            * await $.session.send({ to: { agentId }, text: "stop after this file" })
+2684:            */
+2685:           send: EventCalls['session']['send'];
+2686:           /**
+2687:            * Appends a row to a conversation of the session: the event
+2688:            * `session.append`, the engine's own call for every row it keeps.
+2689:            *
+2690:            * A user-role row the person does not see as typed or a notice, of text
+2691:            * blocks alone in this release (else refused with the reason): listed at
+2692:            * once. `{ deny: reason }` when a plugin above refused it, nothing stored.
+2693:            *
+2694:            * @example
+2695:            * await $.session.append({ message: { type: "user", content: [note] } })
+2696:            */
+2697:           append: (args: SessionAppendArgs) => Promise<SessionAppendResult>;
+2698:           /**
+2699:            * Holds the session's Anthropic credential on the host and answers an
+2700:            * opaque handle and its kind; the secret never reaches the plugin.
+2701:            *
+2702:            * The handle is spent through `$.http.fetch(url, { auth: handle })`,
+2703:            * which sets the credential header, only for a first-party host. Null
+2704:            * with no first-party credential (a 3P provider, a gateway, no login).
+2705:            *
+2706:            * @example
+2707:            * await $.http.fetch(url, { auth: (await $.session.authorize())?.handle })
+2708:            */
+2709:           authorize: () => Promise<SessionAuthorization>;
+2710:       };
+2711:       /**
+
+--- original lines 3169-3214 ---
+3169:        * Named values held by the host for the session, each with a version: plain
+3170:        * data that survives a hot reload of the plugin's code.
+3171:        *
+3172:        * A `get` made while a `ui.render` hook draws subscribes that instance: a
+3173:        * later `set` draws it again, nobody calling `$.ui.invalidate`. Any plugin
+3174:        * reads any value; its owner alone writes it. Persist through `$.store`.
+3175:        */
+3176:       state: {
+3177:           /**
+3178:            * Resolves the value under `ref` and the version it stands at; a value
+3179:            * never written is `undefined` at version 0.
+3180:            *
+3181:            * Every `get` of one dispatch reads one moment, whatever is written
+3182:            * meanwhile. `plugin` and `key` must be literals in source (`claude plugin
+3183:            * validate` lists them); only a family member's `id` may be computed.
+3184:            *
+3185:            * @param ref `{ plugin, key }` as the owner's contract declares it in
+3186:            *   PluginState, with `id` for a StateFamily key
+3187:            * @returns `{ value, version }`
+3188:            * @example
+3189:            * const workers = { plugin: "swarm", key: "workers" } as const
+3190:            * const { value = [] } = await $.state.get(workers)
+3191:            */
+3192:           get: <P extends keyof PluginState & string, K extends keyof PluginState[P] & string>(ref: StateRef<P, K>) => Promise<StateRead<StateValue<P, K>>>;
+3193:           /**
+3194:            * Writes `value` under `ref`, which must be this plugin's own; the sites
+3195:            * that read it while drawing are drawn again, at the redraw rate.
+3196:            *
+3197:            * Refused while a `ui.render` hook draws (write from `onPress` or another
+3198:            * event) and for another plugin's value (hook its `state.set` and rewrite
+3199:            * `e.value`). JSON data, as `$.store.set` takes; never `undefined`.
+3200:            *
+3201:            * @param ref `{ plugin, key }`, with `id` for a StateFamily key
+3202:            * @param value the value, of the type the contract declares
+3203:            * @param options `ifVersion`: write only while it stands at that version
+3204:            * @returns `{ isSet, version }`; `isSet` false when `ifVersion` missed
+3205:            * @example
+3206:            * await $.state.set(count, held.value + 1, { ifVersion: held.version })
+3207:            */
+3208:           set: <P extends keyof PluginState & string, K extends keyof PluginState[P] & string>(ref: StateRef<P, K>, value: StateValue<P, K>, options?: StateSetOptions) => Promise<StateSetResult>;
+3209:       };
+3210:       /**
+3211:        * The time and timers, each an event through the host: `clock.now` reads
+3212:        * the time; `clock.sleep`, `after` and `every` wait until it has passed.
+3213:        *
+3214:        * A timer's callback is the plugin's own function, kept in its environment
+
+--- original lines 3370-3408 ---
+3370:           read: (args?: SettingsReadArgs) => Promise<Settings>;
+3371:       };
+3372:       /**
+3373:        * The environment of this process, the one every Bash child, MCP server
+3374:        * and `$.process.run` command started after inherits.
+3375:        *
+3376:        * `get` and `set` take the variable's name as a string literal, so what a
+3377:        * module reads and writes is read off its source: `claude plugin validate`
+3378:        * lists the names, and a name the module does not spell is refused.
+3379:        */
+3380:       env: {
+3381:           /**
+3382:            * Resolves with the variable's value, or `undefined` when it is unset.
+3383:            *
+3384:            * `name` must be a string literal; `claude plugin validate` lists the
+3385:            * names your module reads and writes.
+3386:            *
+3387:            * @example
+3388:            * const home = await $.env.get("HOME")
+3389:            */
+3390:           get: (name: string) => Promise<string | undefined>;
+3391:           /**
+3392:            * Sets the variable for this process and everything it starts after, or
+3393:            * unsets it when `value` is `undefined`.
+3394:            *
+3395:            * `name` must be a string literal; `claude plugin validate` lists the
+3396:            * names your module reads and writes.
+3397:            *
+3398:            * @example
+3399:            * await $.env.set("GIT_PAGER", "cat")
+3400:            */
+3401:           set: (name: string, value: string | undefined) => Promise<void>;
+3402:       };
+3403:   }
+3404:
+3405:   /**
+3406:    * The name of an event the engine defines itself (a key of CoreEventOf);
+3407:    * EventName adds the declared plugin nouns' events.
+3408:    */
+
+--- original lines 5788-5845 ---
+5788:
+5789:   /**
+5790:    * What `$.model.complete` takes.
+5791:    */
+5792:   export type ModelCompleteRequest = {
+5793:       /**
+5794:        * An alias (`haiku`) or a full model id; resolved and allowlist-checked like
+5795:        * a `--model` value.
+5796:        */
+5797:       model: string;
+5798:       /**
+5799:        * The one user message.
+5800:        *
+5801:        * The result always says what happened: the reply's text and usage when
+5802:        * the model answered, else a `reason` (an API error with its status, a
+5803:        * reply with no text, or the call cut short).
+5804:        */
+5805:       prompt: string;
+5806:       /**
+5807:        * Precedes the completion as its system prompt, after the CLI's identity
+5808:        * block. Default none.
+5809:        */
+5810:       system?: string;
+5811:       /**
+5812:        * The reply's token cap: any positive integer up to what one reply can
+5813:        * hold, the model's own output limit or 64000, whichever is lower.
+5814:        *
+5815:        * Default 1024. The reply comes back whole, not streamed, and a provider
+5816:        * ends such a request at ten minutes, hence the 64000. One past the limit
+5817:        * is refused, naming it.
+5818:        */
+5819:       maxTokens?: number;
+5820:       /**
+5821:        * How hard the model thinks about it (ModelEffort): `low` for a cheap
+5822:        * label, `max` for a hard judgment. Default: the model's own.
+5823:        *
+5824:        * Sent as the request's effort where the model takes one and dropped
+5825:        * where it does not, as the session's own requests do; a value outside
+5826:        * the five levels is refused.
+5827:        *
+5828:        * @example
+5829:        * await $.model.complete({ model: "haiku", prompt, effort: "low" })
+5830:        */
+5831:       effort?: ModelEffort;
+5832:       /**
+5833:        * How long the whole call may take, in milliseconds, before it resolves
+5834:        * `aborted` and the request is abandoned; default none.
+5835:        *
+5836:        * A `$` call's time never counts against the calling hook's budget, so this
+5837:        * is how a hook bounds the completion itself, by the clock. A positive whole
+5838:        * number, held to what a timer holds (2147483647); anything else is refused.
+5839:        *
+5840:        * @example
+5841:        * await $.model.complete({ model: "haiku", prompt, timeoutMs: 8000 })
+5842:        */
+5843:       timeoutMs?: number;
+5844:   };
+5845:
+
+--- original lines 7783-7821 ---
+7783:
+7784:   /**
+7785:    * The input of `prompt.compose`: the facts a system prompt is composed from,
+7786:    * each already resolved by the engine, at the moment it renders one.
+7787:    */
+7788:   export type PromptComposeInput = {
+7789:       /**
+7790:        * The id of the model the request is for; pinned, the field a matcher
+7791:        * narrows on.
+7792:        */
+7793:       model: string;
+7794:       /**
+7795:        * The model whose prompt is rendered: `model`, unless the engine renders
+7796:        * another model's prompt for it (a model it holds no prompt of its own for).
+7797:        */
+7798:       promptModel: string;
+7799:       /**
+7800:        * Where the session draws at this render, as `$.session.surfaces()`
+7801:        * answers: `terminal` first under the REPL; empty where nothing draws.
+7802:        */
+7803:       surfaces: readonly RenderSurface[];
+7804:       /**
+7805:        * The names of the tools the request offers the model; the engine's own
+7806:        * composition reads them against the session's, an unknown name ignored.
+7807:        */
+7808:       tools: readonly string[];
+7809:       /**
+7810:        * What the person chose in place of the default way of answering, and
+7811:        * whether it keeps the coding instructions; null for the default style.
+7812:        */
+7813:       outputStyle: {
+7814:           name: string;
+7815:           isKeepingCodingInstructions: boolean;
+7816:       } | null;
+7817:       traits: readonly PromptComposeTrait[];
+7818:   };
+7819:
+7820:   /**
+7821:    * What a `prompt.compose` hook returns: the sections of the system prompt,
+
+--- original lines 12566-12668 ---
+12566:   };
+12567:
+12568:   /**
+12569:    * The input of `turn.start`: the prompt a model turn begins with, after
+12570:    * `prompt.submit` settled the text and the UserPromptSubmit settings hooks ran.
+12571:    */
+12572:   export type TurnStartInput = {
+12573:       /**
+12574:        * The user's text as the turn proceeds with it ("" for a turn started without
+12575:        * a typed prompt, e.g. a continuation).
+12576:        */
+12577:       text: string;
+12578:       /**
+12579:        * The turn's id, minted here; the same one every `turn.step` and the
+12580:        * `turn.complete` of this turn carry.
+12581:        */
+12582:       turnId: string;
+12583:   };
+12584:
+12585:   /**
+12586:    * What a `turn.start` hook returns and what `next(e)` resolves to:
+12587:    * `{ turnId }`, echoed by core; a hook's own value does not change the turn.
+12588:    */
+12589:   export type TurnStartResult = {
+12590:       turnId: string;
+12591:   };
+12592:
+12593:   /**
+12594:    * One piece of a `turn.step` response as it streams through the chain:
+12595:    * what a hook's `next(e)` yields and what the hook yields up in turn.
+12596:    *
+12597:    * Text, thinking, a tool call's start and arguments, and the stop are
+12598:    * plain data a hook reads and rewrites; `engine` is the rest, passed on
+12599:    * unread. What leaves the outermost hook is what is shown and recorded.
+12600:    */
+12601:   export type TurnStepChunk = TurnStepTextChunk | TurnStepThinkingChunk | TurnStepToolChunk | TurnStepInputChunk | TurnStepStopChunk | TurnStepEngineChunk;
+12602:
+12603:   /**
+12604:    * An item of the engine's stream the other chunk kinds do not model (the
+12605:    * envelope, a block's start and end, a retry marker), opaque by `ref`.
+12606:    *
+12607:    * Pass it on where it came. A hook that yields its own response has none
+12608:    * to yield, and the engine supplies what the response needs around the
+12609:    * chunks it does yield.
+12610:    */
+12611:   export type TurnStepEngineChunk = {
+12612:       kind: 'engine';
+12613:       /**
+12614:        * The engine's handle on the item; opaque, this step's only.
+12615:        */
+12616:       ref: number;
+12617:   };
+12618:
+12619:   /**
+12620:    * The input of `turn.step`: one model request inside a turn, at the moment
+12621:    * the engine is about to send it; the bottom of the chain sends it.
+12622:    *
+12623:    * The transcript is not on it: `messageCount` says how many messages the
+12624:    * request carries, and `$.session.messages()` reads them (in a subagent's
+12625:    * loop, `$.session.messages({ agentId: e.agentId })`). A hook rewrites
+12626:    * `model` or `effort` going down; the rest is pinned.
+12627:    */
+12628:   export type TurnStepInput = {
+12629:       /**
+12630:        * The turn this step belongs to (`turn.start`'s id; inside a subagent's
+12631:        * loop, the id the run's `turn.complete` will carry). Pinned.
+12632:        */
+12633:       turnId: string;
+12634:       /**
+12635:        * The step's position in the turn, from 0. Pinned.
+12636:        */
+12637:       index: number;
+12638:       /**
+12639:        * Which model the request names, as the engine resolved it for this step
+12640:        * (the session's, a fallback's). `next({ ...e, model })` names another.
+12641:        */
+12642:       model: string;
+12643:       /**
+12644:        * How hard the request asks the model to think: the session's setting or
+12645:        * the model's default, absent for a model without effort; rewritable.
+12646:        */
+12647:       effort?: 'low' | 'medium' | 'high' | 'xhigh' | 'max' | number;
+12648:       /**
+12649:        * How many messages the request carries (the conversation so far, the
+12650:        * turn's tool results included). Pinned: the messages are the engine's.
+12651:        */
+12652:       messageCount: number;
+12653:       /**
+12654:        * The loop the request is made in: a subagent's id, the `id`
+12655:        * `$.agent.list()` gives it and its `tool.call`s carry; absent on main.
+12656:        *
+12657:        * Pinned: a different value is refused, one left out is kept. A subagent
+12658:        * a hook spawned through `$.agent.spawn` steps past that hook, as its tool
+12659:        * calls do; every other hook sees its steps.
+12660:        */
+12661:       agentId?: string;
+12662:   };
+12663:
+12664:   /**
+12665:    * A piece of a tool call's arguments as they arrive: JSON text, partial,
+12666:    * for the `tool` chunk of the same `index`.
+12667:    *
+12668:    * The arguments the tool runs with are the pieces concatenated and parsed
+
+--- original lines 9800-9842 ---
+9800:    * a label, the options, the one selected, the closure a pick runs. A leaf.
+9801:    *
+9802:    * Focused through the same ring as `Button` (`abovePrompt:focus`); keys reach
+9803:    * it only while it has focus (arrows move, Enter picks) and Esc always
+9804:    * returns to the prompt; a pick raises `ui.select`, its bottom `onSelect`.
+9805:    */
+9806:   export type SelectProps = {
+9807:       /**
+9808:        * The element's address: `e.element` at `ui.select`, what a matcher names.
+9809:        */
+9810:       key: string;
+9811:       /**
+9812:        * Text drawn before the current value.
+9813:        */
+9814:       label?: string;
+9815:       /**
+9816:        * What can be picked, in the order drawn; at least one, values unique.
+9817:        */
+9818:       options: readonly SelectOption[];
+9819:       /**
+9820:        * Which option is selected when drawn; the person's pick replaces it
+9821:        * until the hook draws another.
+9822:        */
+9823:       value?: string;
+9824:       /**
+9825:        * The site's focus ring starts here when the site takes the keyboard,
+9826:        * instead of on nothing, as the DOM's `autofocus`: Enter acts on it at once.
+9827:        *
+9828:        * A pane opened with `focus`, or the person's focus chord or click, is the
+9829:        * take. Of several in one site the first drawn wins; it raises `ui.focus`,
+9830:        * origin this plugin. A ring the person has moved stays where it was put.
+9831:        */
+9832:       autoFocus?: true;
+9833:       /**
+9834:        * Runs on a pick with the option's value, in the plugin's own environment:
+9835:        * the bottom of a `ui.select` chain. No model turn unless it asks one.
+9836:        */
+9837:       onSelect: (value: string, e: UiSelectArgument) => void;
+9838:   };
+9839:
+9840:   /**
+9841:    * `session.append`'s input as a plugin's `$.session.append(args)` takes it:
+9842:    * the row's kind and text, and the loop it joins.

@@ -1,0 +1,36 @@
+{
+  "version": "2.1.288 (Claude Code)\nCommit: 17fe1eb736e5b1433d6ca86a1db334cec8520450",
+  "binary_sha256": "bbe93063f7a0879a1021b2891e5c9354e5b3b98433e32efe6750f7710afed750",
+  "probe_validated": true,
+  "exit_code": 0,
+  "reply_matches": true,
+  "hook_counts": {
+    "envReads": 0,
+    "httpCalls": 0,
+    "completions": 0,
+    "steps": 1
+  },
+  "requests": {
+    "A": [
+      {
+        "path": "/v1/messages?beta=true",
+        "model": "spike-rewritten-model",
+        "uses_initial_key": true,
+        "uses_replacement_key": false
+      }
+    ],
+    "B": []
+  },
+  "observed_expected_limitation": true,
+  "settings_before": {
+    "exists": true,
+    "sha256": "2098770127a8f15a29ca13b8852a82db1f2ef279c10eebd6bac2b5e3e4e14364",
+    "mtime_ns": 1791004609123480273
+  },
+  "settings_after": {
+    "exists": true,
+    "sha256": "2098770127a8f15a29ca13b8852a82db1f2ef279c10eebd6bac2b5e3e4e14364",
+    "mtime_ns": 1791004609123480273
+  },
+  "settings_unchanged": true
+}

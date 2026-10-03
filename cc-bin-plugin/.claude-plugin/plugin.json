@@ -1,0 +1,6 @@
+{
+  "name": "cc-bin-provider",
+  "version": "0.2.0",
+  "description": "Switch cc-bin providers from Claude Code's fullscreen /provider picker.",
+  "author": { "name": "cc-bin-plugin contributors" }
+}

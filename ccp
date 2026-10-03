@@ -2,42 +2,35 @@
 
 set -euo pipefail
 
-# 提供商配置：prefix sonnet opus haiku
-declare -A PROVIDERS=(
-  [zp]="ZHIPU GLM-5.3 GLM-5.3 GLM-5.3-Flash"
-  [mm]="MINIMAX MiniMax-M3 MiniMax-M3 MiniMax-M3"
-  [ds]="DEEPSEEK deepseek-flash deepseek-flash deepseek-flash"
-  [mimo]="MIMO mimo-v2.6-pro mimo-v2.6-pro mimo-v2.6-flash"
-)
+source "${0:A:h}/lib/providers.zsh"
 
-# 解析参数
-provider=""
-passthrough=()
-if [[ $# -gt 0 && -n "${PROVIDERS[$1]:-}" ]]; then
-  provider="$1"; shift
-fi
-if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-  echo "Usage: ccp <${(kj:|:)PROVIDERS}> [claude options...]"; exit 0
-fi
-passthrough=("$@")
+case "${1:-}" in
+  --list) list_providers; exit 0 ;;
+  --help|-h)
+    echo "Usage: ccp <${(j:|:)provider_order}> [claude options...] | --list"
+    exit 0 ;;
+  --) shift; exec claude "$@" ;;
+  ""|-*) exec claude "$@" ;;
+esac
 
-if [[ -n "$provider" ]]; then
-  read -r prefix sonnet opus haiku <<< "${PROVIDERS[$provider]}"
-  base_var="${prefix}_BASE_URL"
-  key_var="${prefix}_API_KEY"
-  base_url="${(P)base_var:?Error: $base_var not set}"
-  [[ "$base_url" != */anthropic ]] && base_url="${base_url}/anthropic"
-  api_key="${(P)key_var:?Error: $key_var not set}"
+load_provider "$1"
+shift
 
-  settings_file="${0:A:h}/.claude/settings-${provider}.json"
-  mkdir -p "${settings_file:h}"
-  printf '{"env":{"ANTHROPIC_BASE_URL":"%s","ANTHROPIC_AUTH_TOKEN":"%s","ANTHROPIC_DEFAULT_SONNET_MODEL":"%s","ANTHROPIC_DEFAULT_OPUS_MODEL":"%s","ANTHROPIC_DEFAULT_HAIKU_MODEL":"%s"},"tui":"fullscreen"}\n' \
-    "$base_url" "$api_key" "$sonnet" "$opus" "$haiku" > "$settings_file"
+umask 077
+settings_file=$(mktemp "${TMPDIR:-/tmp}/ccp-settings.XXXXXX")
+trap 'rm -f -- "$settings_file"' EXIT
+# Let Claude finish handling terminal signals before EXIT removes its settings.
+trap ':' INT TERM HUP
+render_provider_settings > "$settings_file"
 
-  set -- "--settings" "$settings_file" "${passthrough[@]}"
-else
-  set -- "${passthrough[@]}"
-fi
-
-[[ -n "$provider" ]] && echo "Use $sonnet/$opus/$haiku"
-exec claude "$@"
+echo "Use $sonnet/$opus/$haiku"
+# These overrides belong only to the child; inherited Anthropic settings cannot win.
+# Keep the wrapper alive so its EXIT trap removes the credential file on completion.
+ANTHROPIC_BASE_URL="$base_url" \
+ANTHROPIC_API_KEY="$auth_key" \
+ANTHROPIC_AUTH_TOKEN="$auth_token" \
+ANTHROPIC_MODEL="$sonnet" \
+ANTHROPIC_DEFAULT_SONNET_MODEL="$sonnet" \
+ANTHROPIC_DEFAULT_OPUS_MODEL="$opus" \
+ANTHROPIC_DEFAULT_HAIKU_MODEL="$haiku" \
+claude --settings "$settings_file" "$@"

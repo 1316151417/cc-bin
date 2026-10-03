@@ -4,41 +4,31 @@ set -euo pipefail
 
 TARGET_FILE="$HOME/.claude/settings.json"
 
-declare -A PROVIDERS=(
-  [zp]="ZHIPU GLM-5.3 GLM-5.3 GLM-5.3-Flash"
-  [mm]="MINIMAX MiniMax-M3 MiniMax-M3 MiniMax-M3"
-  [ds]="DEEPSEEK deepseek-flash deepseek-flash deepseek-flash"
-  [mimo]="MIMO mimo-v2.6-pro mimo-v2.6-pro mimo-v2.6-flash"
-)
+source "${0:A:h}/lib/providers.zsh"
 
-key="${1:-}"
-if [[ -z "${PROVIDERS[$key]:-}" ]]; then
-  echo "Usage: ccs <${(kj:|:)PROVIDERS}>"
+case "${1:-}" in
+  --list) list_providers; exit 0 ;;
+  --help|-h)
+    echo "Usage: ccs <${(j:|:)provider_order}> | --list"
+    exit 0 ;;
+esac
+load_provider "${1:-}"
+
+umask 077
+if [[ -d "$TARGET_FILE" || -d "${TARGET_FILE}.bak" ]]; then
+  print -u2 -- 'Settings or backup path is a directory; no configuration was changed.'
   exit 1
 fi
+mkdir -p "${TARGET_FILE:h}"
+temporary_file=$(mktemp "${TARGET_FILE}.tmp.XXXXXX")
+trap 'rm -f -- "$temporary_file"' EXIT
 
-read -r prefix sonnet opus haiku <<< "${PROVIDERS[$key]}"
-base_var="${prefix}_BASE_URL"
-key_var="${prefix}_API_KEY"
-base_url="${(P)base_var:?}"
-[[ "$base_url" != */anthropic ]] && base_url="${base_url}/anthropic"
-api_key="${(P)key_var:?}"
+render_provider_settings > "$temporary_file"
 
-[[ -f "$TARGET_FILE" ]] && cp "$TARGET_FILE" "${TARGET_FILE}.bak"
-
-cat > "$TARGET_FILE" <<EOF
-{
-  "env": {
-    "ANTHROPIC_BASE_URL": "$base_url",
-    "ANTHROPIC_AUTH_TOKEN": "$api_key",
-    "API_TIMEOUT_MS": "3000000",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "$sonnet",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "$opus",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "$haiku"
-  },
-  "tui": "fullscreen"
-}
-EOF
+if [[ -f "$TARGET_FILE" ]]; then
+  cp "$TARGET_FILE" "${TARGET_FILE}.bak"
+  chmod 600 "${TARGET_FILE}.bak"
+fi
+mv -f -- "$temporary_file" "$TARGET_FILE"
 
 echo "Switched to $sonnet/$opus/$haiku"

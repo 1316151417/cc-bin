@@ -1,0 +1,40 @@
+Claude Code 2.1.288 native Mach-O: exact UTF-8 source excerpts.
+Binary SHA-256: bbe93063f7a0879a1021b2891e5c9354e5b3b98433e32efe6750f7710afed750
+Offsets below are zero-based byte offsets into the original executable.
+Minified symbol names are build-specific. These are evidence, not plugin APIs.
+
+env.set host implementation; byte offset 188202816
+function Nco(e){if(e.value===void 0)return delete process.env[e.name],Promise.resolve();return process.env[e.name]=e.value,Promise.resolve()}
+
+env.get host implementation; byte offset 188202281
+function Dco(e){let r=e.name==="USER_TYPE"?"external":process.env[e.name];return Promise.resolve(r===void 0?void 0:String(r))}
+
+session model read; byte offset 188589460
+"session.model":{run:(n,r)=>qoe(r.plugin).then((s)=>s.model)}
+
+live environment getter; byte offset 179259088
+get:()=>{let C=process.env[r];if(C!==n)e=s.parse(C),n=C;return e}
+
+client construction; byte offset 185932795
+let Ve={apiKey:$e.apiKey,authToken:$e.authToken,...a.ANTHROPIC_BASE_URL?{baseURL:a.ANTHROPIC_BASE_URL}:!1,...yt,...vV()&&{logger:ds()}};return new hue(Ve)
+
+step to request options; byte offset 194360294
+function _s(e,s){let{options:n}=e.args,r=s.effort!==e.sent.effort&&s.effort!==void 0,g=n.resumeIncompleteThinking===!0&&s.model!==n.model&&!WFn(e.args.messages,s.model);if(g&&!e.state.isResumeKeptTold)e.state.isResumeKeptTold=!0,Xn(n.model);return{...n,model:g?n.model:Gn(s.model,n.model),...r&&{hookEffortValue:s.effort}}}
+
+interactive /model saves default; byte offset 199633446
+async function pNe(e,o,r,s,n,d,i,c){let u=r().fastMode;if(oae(),K_(e,r(),o,d),s((g)=>({...g,mainLoopModel:o,mainLoopModelForSession:null})),i!==void 0)p("model_switch","family_alias_stepped_down");else y("model_switch");let f=Io()?Yk(o,u):!!u;if(Io()){if(UU(),f!==!!u)s((g)=>({...g,fastMode:f})),Xk(u,f)}let M=n?await bat(o,c):null,_=M?.kind==="saved",S=`${Mke}${Yb(RE(o))}${_?" and saved as your default for new sessions":" for this session only"}`;return S+=Jhe(u,f,o,{announceKeptOn:!0}),S+=wat(M),S+=(_?uAr(o):"")||pAr(o),S}
+
+model default persistence; byte offset 199633991
+function bat(e,o,r=A){let s=_n("userSettings",{model:e??void 0},void 0,o);
+
+model.complete destructures no transport; byte offset 188566345
+async function HDe({model:e,prompt:n,system:r,maxTokens:s,effort:g,timeoutMs:h},b,w)
+
+http.fetch plugin operation; byte offset 188583357
+var XFt=(e)=>({check:(n)=>typeof n?.url==="string"?void 0:"takes a URL",run:async(n,r)=>{let{pluginName:s,pluginStorageId:g}=mse(e,r,"http.fetch");return Ido(n,{pluginName:s,pluginStorageId:g},r.signal)}})
+
+Complete built-in operation/event tables; byte offset 182329107
+var oEn=["model.complete","model.classify","model.fork","audio.play","audio.speak","mcp.call","mcp.connect","session.cwd","session.root","session.model","session.turns","session.id","session.messages","session.repo","session.surface","session.surfaces","session.authorize","session.usage","session.version","turn.abort","prompt.read","flag.value","tool.list","tool.register","command.list","command.register","config.list","agent.list","agent.register","ui.toast","ui.status","ui.log","ui.notice","ui.invalidate","ui.open","ui.close","ui.panes","ui.selection","ui.copy","ui.blit","fs.read","fs.write","fs.list","fs.exists","fs.stat","fs.ancestors","store.get","store.set","store.delete","store.keys","state.get","state.set","clock.now","clock.sleep","clock.after","clock.every","http.fetch","process.run","process.spawn","settings.read","env.get","env.set"];var jJe=[...Xe,"tool.call","tool.check","ui.render","ui.resolve","ui.press","ui.input","ui.select","ui.message","ui.scroll","ui.focus","agent.offer","agent.spawn","prompt.submit","prompt.fill","prompt.suggest","prompt.edit","prompt.section","prompt.context","prompt.attachment","prompt.compose","tool.describe","command.run","command.describe","config.set","config.describe","telemetry.log","telemetry.mark","skill.prompt","attribution.text","session.start","session.receive","session.append","session.send","session.compact","session.attach","session.detach","session.measure","session.end","plugin.register","turn.start","turn.step","turn.complete","engine.create",...oEn];
+
+builtin inline /model persistence argument; byte offset 199651748
+pNe(t.session,e.model,t.getAppState,t.setAppState,!t.options.isNonInteractiveSession,"command",e.substitutedFrom,t.storageV5)

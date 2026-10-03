@@ -1,2 +1,7 @@
 .claude/
 __pycache__/
+.DS_Store
+cc-bin-plugin/.claude-plugin/types/
+cc-bin-plugin/tsconfig.json
+cc-bin-plugin/spike/probe/.claude-plugin/types/
+cc-bin-plugin/spike/probe/tsconfig.json

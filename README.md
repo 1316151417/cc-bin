@@ -31,7 +31,7 @@ bash install.sh
 
 源码可以放在 `~/IdeaProjects/cc-bin` 等任意目录；`~/cc-bin` 用于安装命令，不存放源码仓库。安装结果不依赖源码目录，插件也不需要 `--plugin-dir`。
 
-源码脚本 `ccp`、`ccs` 和共享配置模块 `providers.zsh` 集中在 `lib/`，可直接运行 `./lib/ccp`、`./lib/ccs`。截图统一放在 `docs/images/`，命令截图为 [display.png](docs/images/display.png)。
+源码脚本 `ccp`、`ccs` 和共享配置模块 `providers.zsh` 集中在 `lib/`，可直接运行 `./lib/ccp`、`./lib/ccs`。截图统一放在 `docs/images/`。
 
 安装器会在 `~/.zshrc` 缺少以下行时追加，已有则跳过：
 
@@ -71,6 +71,8 @@ ccp zp --model opus     # 透传 Claude 参数
 ccs --list              # 只读 JSON 列表；ccp --list 同样支持
 ```
 
+![ccs 切换 Provider 与 ccp 独立启动的命令截图](docs/images/display.png)
+
 在 fullscreen 中使用选择器：
 
 ```sh
@@ -78,7 +80,7 @@ claude --settings '{"tui":"fullscreen"}'
 # 进入 Claude 后输入 /provider
 ```
 
-只显示配置了 Key 的选项；方向键选择，Enter 切换，Esc 关闭。详见 [插件说明](cc-bin-plugin/README.md)。
+只显示配置了 Key 的选项；方向键选择，Enter 切换，Esc 关闭。可用 `claude plugin list` 查看安装结果，插件 ID 为 `cc-bin-provider@skills-dir`。
 
 ![Claude Code fullscreen 中的 /provider 选择器](docs/images/display-plugin.png)
 
